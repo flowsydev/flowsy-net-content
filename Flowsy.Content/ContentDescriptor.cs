@@ -5,6 +5,14 @@ namespace Flowsy.Content;
 /// </summary>
 public class ContentDescriptor
 {
+    public ContentDescriptor()
+    {
+        Name = string.Empty;
+        Tags = Array.Empty<string>();
+        MimeTypes = Array.Empty<string>();
+        Extensions = Array.Empty<string>();
+    }
+
     public ContentDescriptor(
         string name,
         string? location = null,
@@ -33,37 +41,37 @@ public class ContentDescriptor
     /// <summary>
     /// The name for the content. For example, a file name or document identifier within a distributed system.
     /// </summary>
-    public string Name { get; }
+    public string Name { get; set; }
     
     /// <summary>
     /// The location of the content. For example, a directory path, network address or web URL.
     /// </summary>
-    public string? Location { get; }
+    public string? Location { get; set; }
     
     /// <summary>
     /// A description for the content.
     /// </summary>
-    public string? Description { get; }
+    public string? Description { get; set; }
     
     /// <summary>
     /// Optional tags for the content.
     /// </summary>
-    public IEnumerable<string> Tags { get; }
+    public IEnumerable<string> Tags { get; set; }
     
     /// <summary>
     /// The moment when the content was created.
     /// </summary>
-    public DateTime? Created { get; }
+    public DateTime? Created { get; set; }
     
     /// <summary>
     /// The moment when the content was written for the last time.
     /// </summary>
-    public DateTime? LastWritten { get; }
+    public DateTime? LastWritten { get; set; }
     
     /// <summary>
     /// The moment when the content was read for the last time.
     /// </summary>
-    public DateTime? LastRead { get; }
+    public DateTime? LastRead { get; set; }
     
     /// <summary>
     /// The content size in bytes.
@@ -108,7 +116,7 @@ public class ContentDescriptor
     /// <summary>
     /// The MIME types associated to the content.
     /// </summary>
-    public IEnumerable<string> MimeTypes { get; }
+    public IEnumerable<string> MimeTypes { get; set; }
     
     /// <summary>
     /// The first file extension associated to the content.
@@ -118,5 +126,5 @@ public class ContentDescriptor
     /// <summary>
     /// The file extensions associated to the content.
     /// </summary>
-    public IEnumerable<string> Extensions { get; }
+    public IEnumerable<string> Extensions { get; set; }
 }
