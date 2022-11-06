@@ -5,6 +5,15 @@ namespace Flowsy.Content;
 
 public class BasicContentInspector : IContentInspector
 {
+    public virtual ContentDescriptor Inspect(object content)
+        => content switch
+        {
+            Stream stream => Inspect(stream),
+            ImmutableArray<byte> immutableArray => Inspect(immutableArray),
+            byte[] array => Inspect(ImmutableArray.Create(array)),
+            _ => throw new NotSupportedException()
+        };
+
     public virtual ContentDescriptor Inspect(string filePath)
     {
         using var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -18,13 +27,32 @@ public class BasicContentInspector : IContentInspector
         contentDescriptor.ModificationDate = fileInfo.LastWriteTime; 
         contentDescriptor.ReadDate = fileInfo.LastAccessTime;
         contentDescriptor.ByteLength = fileInfo.Length;
+        contentDescriptor.MetaData = new Dictionary<string, object?>
+        {
+            ["Attributes"] = fileInfo.Attributes,
+            ["Exists"] = fileInfo.Exists,
+            ["IsReadOnly"] = fileInfo.IsReadOnly,
+            ["LinkTarget"] = fileInfo.LinkTarget,
+            ["Extension"] = fileInfo.Extension
+        };
 
         return contentDescriptor;
     }
 
     public virtual ContentDescriptor Inspect(Stream stream)
-        => Inspect(ImmutableArray.Create(stream.ToArray()));
+    {
+        if (stream.CanSeek)
+            return Inspect(ImmutableArray.Create(stream.ToArray()));
+
+        return new ContentDescriptor
+        {
+            ByteLength = stream.Length
+        };
+    }
 
     public virtual ContentDescriptor Inspect(ImmutableArray<byte> array)
-        => new(name: string.Empty, byteLength: array.Length);
+        => new()
+        {
+            ByteLength = array.Length
+        };
 }

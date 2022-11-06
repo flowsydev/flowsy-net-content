@@ -5,19 +5,15 @@ namespace Flowsy.Content;
 /// </summary>
 public class ContentDescriptor
 {
-    public ContentDescriptor()
+    public ContentDescriptor() : this(string.Empty)
     {
-        Name = string.Empty;
-        Tags = Array.Empty<string>();
-        MimeTypes = Array.Empty<string>();
-        Extensions = Array.Empty<string>();
     }
 
     public ContentDescriptor(
         string name,
         string? location = null,
         string? description = null,
-        IEnumerable<string>? tags = null,
+        IDictionary<string, object?>? metaData = null,
         DateTime? creationDate = null,
         DateTime? modificationDate = null,
         DateTime? readDate = null,
@@ -29,7 +25,7 @@ public class ContentDescriptor
         Name = name;
         Location = location;
         Description = description;
-        Tags = tags ?? Array.Empty<string>();
+        MetaData = metaData ?? new Dictionary<string, object?>();
         CreationDate = creationDate;
         ModificationDate = modificationDate;
         ReadDate = readDate;
@@ -54,10 +50,10 @@ public class ContentDescriptor
     public string? Description { get; set; }
     
     /// <summary>
-    /// Optional tags for the content.
+    /// Optional metadata for the content.
     /// </summary>
-    public IEnumerable<string> Tags { get; set; }
-    
+    public IDictionary<string, object?> MetaData { get; set; }
+
     /// <summary>
     /// The moment when the content was created.
     /// </summary>

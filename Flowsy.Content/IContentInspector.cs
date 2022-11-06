@@ -8,6 +8,13 @@ namespace Flowsy.Content;
 public interface IContentInspector
 {
     /// <summary>
+    /// Inspects the given content to obtain the corresponding descriptor.
+    /// </summary>
+    /// <param name="content">The content.</param>
+    /// <returns>An instance of ContentDescriptor.</returns>
+    public ContentDescriptor Inspect(object content);
+    
+    /// <summary>
     /// Inspects the content of a file to obtain the corresponding descriptor.
     /// </summary>
     /// <param name="filePath">The full path to the file.</param>
