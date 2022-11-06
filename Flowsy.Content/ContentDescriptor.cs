@@ -18,9 +18,9 @@ public class ContentDescriptor
         string? location = null,
         string? description = null,
         IEnumerable<string>? tags = null,
-        DateTime? created = null,
-        DateTime? lastWritten = null,
-        DateTime? lastRead = null,
+        DateTime? creationDate = null,
+        DateTime? modificationDate = null,
+        DateTime? readDate = null,
         long? byteLength = null,
         IEnumerable<string>? mimeTypes = null,
         IEnumerable<string>? extensions = null
@@ -30,9 +30,9 @@ public class ContentDescriptor
         Location = location;
         Description = description;
         Tags = tags ?? Array.Empty<string>();
-        Created = created;
-        LastWritten = lastWritten;
-        LastRead = lastRead;
+        CreationDate = creationDate;
+        ModificationDate = modificationDate;
+        ReadDate = readDate;
         ByteLength = byteLength;
         MimeTypes = mimeTypes ?? Array.Empty<string>();
         Extensions = extensions ?? Array.Empty<string>();
@@ -61,17 +61,17 @@ public class ContentDescriptor
     /// <summary>
     /// The moment when the content was created.
     /// </summary>
-    public DateTime? Created { get; set; }
+    public DateTime? CreationDate { get; set; }
     
     /// <summary>
     /// The moment when the content was written for the last time.
     /// </summary>
-    public DateTime? LastWritten { get; set; }
+    public DateTime? ModificationDate { get; set; }
     
     /// <summary>
     /// The moment when the content was read for the last time.
     /// </summary>
-    public DateTime? LastRead { get; set; }
+    public DateTime? ReadDate { get; set; }
     
     /// <summary>
     /// The content size in bytes.
