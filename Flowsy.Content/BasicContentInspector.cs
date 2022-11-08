@@ -1,26 +1,26 @@
 using System.Collections.Immutable;
 using Flowsy.Core;
+using HeyRed.Mime;
 
 namespace Flowsy.Content;
 
 public class BasicContentInspector : IContentInspector
 {
-    public virtual ContentDescriptor Inspect(object content)
+    public virtual ContentDescriptor Inspect(object content, string? fileExtension = null)
         => content switch
         {
-            Stream stream => Inspect(stream),
-            ImmutableArray<byte> immutableArray => Inspect(immutableArray),
-            byte[] array => Inspect(ImmutableArray.Create(array)),
+            Stream stream => Inspect(stream, fileExtension),
+            ImmutableArray<byte> bytes => Inspect(bytes, fileExtension),
+            IEnumerable<byte> bytes => Inspect(bytes, fileExtension),
             _ => throw new NotSupportedException()
         };
 
     public virtual ContentDescriptor Inspect(string filePath)
     {
-        using var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-        
-        var contentDescriptor = Inspect(stream);
-        
         var fileInfo = new FileInfo(filePath);
+        using var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+        var contentDescriptor = Inspect(stream, fileInfo.Extension);
         contentDescriptor.Name = fileInfo.Name;
         contentDescriptor.Location = fileInfo.DirectoryName;
         contentDescriptor.CreationDate = fileInfo.CreationTime; 
@@ -39,20 +39,17 @@ public class BasicContentInspector : IContentInspector
         return contentDescriptor;
     }
 
-    public virtual ContentDescriptor Inspect(Stream stream)
-    {
-        if (stream.CanSeek)
-            return Inspect(ImmutableArray.Create(stream.ToArray()));
+    public virtual ContentDescriptor Inspect(Stream stream, string? fileExtension = null)
+        => Inspect(stream.ToArray(), fileExtension);
 
-        return new ContentDescriptor
-        {
-            ByteLength = stream.Length
-        };
-    }
-
-    public virtual ContentDescriptor Inspect(ImmutableArray<byte> array)
+    public virtual ContentDescriptor Inspect(ImmutableArray<byte> bytes, string? fileExtension = null)
+        => Inspect(bytes.AsEnumerable(), fileExtension);
+    
+    public virtual ContentDescriptor Inspect(IEnumerable<byte> bytes, string? fileExtension = null)
         => new()
         {
-            ByteLength = array.Length
+            ByteLength = bytes.Count(),
+            MimeTypes = fileExtension is null ? Array.Empty<string>() : new [] { MimeTypesMap.GetMimeType(fileExtension) },
+            Extensions =fileExtension is null ? Array.Empty<string>() : new [] { fileExtension }
         };
 }
