@@ -22,17 +22,31 @@ public class ContentInspector : IContentInspector
         return descriptor;
     }
 
-    public ContentDescriptor Inspect(Stream stream)
+    public ContentDescriptor Inspect(Stream stream, string? fileExtension = null)
     {
         ContentDescriptor descriptor;
         // Inspect the stream and assign value to descriptor;
         return descriptor;
     }
-
-    public ContentDescriptor Inspect(ImmutableArray<byte> array)
+    
+    public ContentDescriptor Inspect(ImmutableArray<byte> bytes, string? fileExtension = null)
     {
         ContentDescriptor descriptor;
-        // Inspect the byte array and assign value to descriptor;
+        // Inspect the bytes and assign value to descriptor;
+        return descriptor;
+    }
+    
+    public ContentDescriptor Inspect(IEnumerable<byte> bytes, string? fileExtension = null)
+    {
+        ContentDescriptor descriptor;
+        // Inspect the bytes and assign value to descriptor;
+        return descriptor;
+    }
+    
+    public ContentDescriptor Inspect(object content, string? fileExtension = null)
+    {
+        ContentDescriptor descriptor;
+        // Inspect then content and assign value to descriptor;
         return descriptor;
     }
 }

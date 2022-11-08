@@ -8,15 +8,6 @@ namespace Flowsy.Content;
 public interface IContentInspector
 {
     /// <summary>
-    /// Inspects the given content to obtain the corresponding descriptor.
-    /// An optional file extension can be used as a fallback if the descriptor could not be determined from the stream content.
-    /// </summary>
-    /// <param name="content">The content.</param>
-    /// <param name="fileExtension">The file extension associated with the content.</param>
-    /// <returns>An instance of ContentDescriptor.</returns>
-    public ContentDescriptor Inspect(object content, string? fileExtension = null);
-    
-    /// <summary>
     /// Inspects the content of a file to obtain the corresponding descriptor.
     /// </summary>
     /// <param name="filePath">The full path to the file.</param>
@@ -49,4 +40,13 @@ public interface IContentInspector
     /// <param name="fileExtension">The file extension associated with the byte array.</param>
     /// <returns>An instance of ContentDescriptor.</returns>
     public ContentDescriptor Inspect(ImmutableArray<byte> bytes, string? fileExtension = null);
+    
+    /// <summary>
+    /// Inspects the given content to obtain the corresponding descriptor.
+    /// An optional file extension can be used as a fallback if the descriptor could not be determined from the stream content.
+    /// </summary>
+    /// <param name="content">The content.</param>
+    /// <param name="fileExtension">The file extension associated with the content.</param>
+    /// <returns>An instance of ContentDescriptor.</returns>
+    public ContentDescriptor Inspect(object content, string? fileExtension = null);
 }

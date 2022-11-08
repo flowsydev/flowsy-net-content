@@ -5,16 +5,7 @@ using HeyRed.Mime;
 namespace Flowsy.Content;
 
 public class BasicContentInspector : IContentInspector
-{
-    public virtual ContentDescriptor Inspect(object content, string? fileExtension = null)
-        => content switch
-        {
-            Stream stream => Inspect(stream, fileExtension),
-            ImmutableArray<byte> bytes => Inspect(bytes, fileExtension),
-            IEnumerable<byte> bytes => Inspect(bytes, fileExtension),
-            _ => throw new NotSupportedException()
-        };
-
+{ 
     public virtual ContentDescriptor Inspect(string filePath)
     {
         var fileInfo = new FileInfo(filePath);
@@ -51,5 +42,14 @@ public class BasicContentInspector : IContentInspector
             ByteLength = bytes.Count(),
             MimeTypes = fileExtension is null ? Array.Empty<string>() : new [] { MimeTypesMap.GetMimeType(fileExtension) },
             Extensions =fileExtension is null ? Array.Empty<string>() : new [] { fileExtension }
+        };
+    
+    public virtual ContentDescriptor Inspect(object content, string? fileExtension = null)
+        => content switch
+        {
+            Stream stream => Inspect(stream, fileExtension),
+            ImmutableArray<byte> bytes => Inspect(bytes, fileExtension),
+            IEnumerable<byte> bytes => Inspect(bytes, fileExtension),
+            _ => throw new NotSupportedException()
         };
 }
