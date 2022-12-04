@@ -30,12 +30,29 @@ public class BasicContentInspector : IContentInspector
         return contentDescriptor;
     }
 
+    public virtual Task<ContentDescriptor> InspectAsync(string filePath, CancellationToken cancellationToken = default)
+        => Task.Run(() => Inspect(filePath), cancellationToken);
+
     public virtual ContentDescriptor Inspect(Stream stream, string? fileExtension = null)
         => Inspect(stream.ToArray(), fileExtension);
 
+    public virtual Task<ContentDescriptor> InspectAsync(
+        Stream stream,
+        string? fileExtension = null,
+        CancellationToken cancellationToken = default
+        )
+        => Task.Run(() => Inspect(stream, fileExtension), cancellationToken);
+
     public virtual ContentDescriptor Inspect(ImmutableArray<byte> bytes, string? fileExtension = null)
         => Inspect(bytes.AsEnumerable(), fileExtension);
-    
+
+    public virtual Task<ContentDescriptor> InspectAsync(
+        IEnumerable<byte> bytes,
+        string? fileExtension = null,
+        CancellationToken cancellationToken = default
+        )
+        => Task.Run(() => Inspect(bytes, fileExtension), cancellationToken);
+
     public virtual ContentDescriptor Inspect(IEnumerable<byte> bytes, string? fileExtension = null)
         => new()
         {
@@ -43,7 +60,14 @@ public class BasicContentInspector : IContentInspector
             MimeTypes = fileExtension is null ? Array.Empty<string>() : new [] { MimeTypesMap.GetMimeType(fileExtension) },
             Extensions =fileExtension is null ? Array.Empty<string>() : new [] { fileExtension }
         };
-    
+
+    public virtual Task<ContentDescriptor> InspectAsync(
+        ImmutableArray<byte> bytes,
+        string? fileExtension = null,
+        CancellationToken cancellationToken = default
+        )
+        => Task.Run(() => Inspect(bytes, fileExtension), cancellationToken);
+
     public virtual ContentDescriptor Inspect(object content, string? fileExtension = null)
         => content switch
         {
@@ -52,4 +76,11 @@ public class BasicContentInspector : IContentInspector
             IEnumerable<byte> bytes => Inspect(bytes, fileExtension),
             _ => throw new NotSupportedException()
         };
+
+    public virtual Task<ContentDescriptor> InspectAsync(
+        object content,
+        string? fileExtension = null,
+        CancellationToken cancellationToken = default
+        )
+        => Task.Run(() => Inspect(content, fileExtension), cancellationToken);
 }
