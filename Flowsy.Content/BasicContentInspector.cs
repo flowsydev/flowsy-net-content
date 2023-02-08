@@ -5,13 +5,31 @@ using HeyRed.Mime;
 namespace Flowsy.Content;
 
 public class BasicContentInspector : IContentInspector
-{ 
+{
+    private const char ExtensionSeparator = '.'; 
+    
+    private static string ResolveExtension(string fileName)
+    {
+        if (string.IsNullOrEmpty(fileName))
+            return string.Empty;
+        
+        var extension = Path.GetExtension(fileName);
+        if (extension == ExtensionSeparator.ToString())
+            return string.Empty;
+        
+        var extensionSeparatorIndex = extension.LastIndexOf(ExtensionSeparator);
+        
+        return extensionSeparatorIndex >= 0 && extensionSeparatorIndex + 1 < extension.Length
+            ? extension[(extensionSeparatorIndex + 1)..]
+            : extension;
+    }
+
     public virtual ContentDescriptor Inspect(string filePath)
     {
         var fileInfo = new FileInfo(filePath);
         using var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-        var contentDescriptor = Inspect(stream, fileInfo.Extension);
+        var contentDescriptor = Inspect(stream, ResolveExtension(fileInfo.Name));
         contentDescriptor.Name = fileInfo.Name;
         contentDescriptor.Location = fileInfo.DirectoryName;
         contentDescriptor.CreationDate = fileInfo.CreationTime; 
@@ -54,12 +72,15 @@ public class BasicContentInspector : IContentInspector
         => Task.Run(() => Inspect(bytes, fileExtension), cancellationToken);
 
     public virtual ContentDescriptor Inspect(IEnumerable<byte> bytes, string? fileExtension = null)
-        => new()
+    {
+        var extension = ResolveExtension(fileExtension ?? string.Empty);
+        return new ContentDescriptor
         {
             ByteLength = bytes.Count(),
-            MimeTypes = fileExtension is null ? Array.Empty<string>() : new [] { MimeTypesMap.GetMimeType(fileExtension) },
-            Extensions =fileExtension is null ? Array.Empty<string>() : new [] { fileExtension }
+            MimeTypes = string.IsNullOrEmpty(extension) ? Array.Empty<string>() : new[] { MimeTypesMap.GetMimeType(extension) },
+            Extensions = string.IsNullOrEmpty(extension) ? Array.Empty<string>() : new[] { extension }
         };
+    }
 
     public virtual Task<ContentDescriptor> InspectAsync(
         ImmutableArray<byte> bytes,
