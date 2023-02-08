@@ -6,9 +6,9 @@ namespace Flowsy.Content;
 
 public class BasicContentInspector : IContentInspector
 {
-    private const char ExtensionSeparator = '.'; 
+    protected const char ExtensionSeparator = '.'; 
     
-    private static string ResolveExtension(string fileName)
+    protected virtual string ResolveExtension(string fileName)
     {
         if (string.IsNullOrEmpty(fileName))
             return string.Empty;
