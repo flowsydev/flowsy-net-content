@@ -24,42 +24,59 @@ public class BasicContentInspector : IContentInspector
             : extension;
     }
 
+    protected virtual void CopyInfo(FileInfo source, ContentDescriptor target)
+    {
+        target.Name = source.Name;
+        target.Location = source.DirectoryName;
+        target.CreationDate = source.CreationTime; 
+        target.ModificationDate = source.LastWriteTime; 
+        target.ReadDate = source.LastAccessTime;
+        target.ByteLength = source.Length;
+        target.MetaData = new Dictionary<string, object?>
+        {
+            ["Attributes"] = source.Attributes,
+            ["Exists"] = source.Exists,
+            ["IsReadOnly"] = source.IsReadOnly,
+            ["LinkTarget"] = source.LinkTarget,
+            ["Extension"] = source.Extension
+        };
+    }
+
     public virtual ContentDescriptor Inspect(string filePath)
     {
         var fileInfo = new FileInfo(filePath);
         using var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
         var contentDescriptor = Inspect(stream, ResolveExtension(fileInfo.Name));
-        contentDescriptor.Name = fileInfo.Name;
-        contentDescriptor.Location = fileInfo.DirectoryName;
-        contentDescriptor.CreationDate = fileInfo.CreationTime; 
-        contentDescriptor.ModificationDate = fileInfo.LastWriteTime; 
-        contentDescriptor.ReadDate = fileInfo.LastAccessTime;
-        contentDescriptor.ByteLength = fileInfo.Length;
-        contentDescriptor.MetaData = new Dictionary<string, object?>
-        {
-            ["Attributes"] = fileInfo.Attributes,
-            ["Exists"] = fileInfo.Exists,
-            ["IsReadOnly"] = fileInfo.IsReadOnly,
-            ["LinkTarget"] = fileInfo.LinkTarget,
-            ["Extension"] = fileInfo.Extension
-        };
+        CopyInfo(fileInfo, contentDescriptor);
+        
+        return contentDescriptor;
+    }
+
+    public virtual async Task<ContentDescriptor> InspectAsync(string filePath, CancellationToken cancellationToken = default)
+    {
+        var fileInfo = new FileInfo(filePath);
+        var extension = ResolveExtension(filePath);
+        await using var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+        var contentDescriptor = await InspectAsync(stream, extension, cancellationToken);
+        CopyInfo(fileInfo, contentDescriptor);
 
         return contentDescriptor;
     }
 
-    public virtual Task<ContentDescriptor> InspectAsync(string filePath, CancellationToken cancellationToken = default)
-        => Task.Run(() => Inspect(filePath), cancellationToken);
-
     public virtual ContentDescriptor Inspect(Stream stream, string? fileExtension = null)
         => Inspect(stream.ToArray(), fileExtension);
 
-    public virtual Task<ContentDescriptor> InspectAsync(
+    public virtual async Task<ContentDescriptor> InspectAsync(
         Stream stream,
         string? fileExtension = null,
         CancellationToken cancellationToken = default
         )
-        => Task.Run(() => Inspect(stream, fileExtension), cancellationToken);
+    {
+        var bytes = await stream.ToArrayAsync(cancellationToken);
+        return Inspect(bytes, fileExtension);
+    }
 
     public virtual ContentDescriptor Inspect(ImmutableArray<byte> bytes, string? fileExtension = null)
         => Inspect(bytes.AsEnumerable(), fileExtension);
@@ -98,10 +115,16 @@ public class BasicContentInspector : IContentInspector
             _ => throw new NotSupportedException()
         };
 
-    public virtual Task<ContentDescriptor> InspectAsync(
+    public virtual async Task<ContentDescriptor> InspectAsync(
         object content,
         string? fileExtension = null,
         CancellationToken cancellationToken = default
-        )
-        => Task.Run(() => Inspect(content, fileExtension), cancellationToken);
+    )
+    {
+        return content switch
+        {
+            Stream stream => await InspectAsync(stream, fileExtension, cancellationToken),
+            _ => Inspect(content, fileExtension)
+        };
+    }
 }
