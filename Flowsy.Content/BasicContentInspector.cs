@@ -1,4 +1,3 @@
-using System.Collections.Immutable;
 using Flowsy.Core;
 using HeyRed.Mime;
 
@@ -37,7 +36,6 @@ public class BasicContentInspector : IContentInspector
             ["Attributes"] = source.Attributes,
             ["Exists"] = source.Exists,
             ["IsReadOnly"] = source.IsReadOnly,
-            ["LinkTarget"] = source.LinkTarget,
             ["Extension"] = source.Extension
         };
     }
@@ -77,10 +75,7 @@ public class BasicContentInspector : IContentInspector
         var bytes = await stream.ToArrayAsync(cancellationToken);
         return Inspect(bytes, fileExtension);
     }
-
-    public virtual ContentDescriptor Inspect(ImmutableArray<byte> bytes, string? fileExtension = null)
-        => Inspect(bytes.AsEnumerable(), fileExtension);
-
+    
     public virtual Task<ContentDescriptor> InspectAsync(
         IEnumerable<byte> bytes,
         string? fileExtension = null,
@@ -99,18 +94,10 @@ public class BasicContentInspector : IContentInspector
         };
     }
 
-    public virtual Task<ContentDescriptor> InspectAsync(
-        ImmutableArray<byte> bytes,
-        string? fileExtension = null,
-        CancellationToken cancellationToken = default
-        )
-        => Task.Run(() => Inspect(bytes, fileExtension), cancellationToken);
-
     public virtual ContentDescriptor Inspect(object content, string? fileExtension = null)
         => content switch
         {
             Stream stream => Inspect(stream, fileExtension),
-            ImmutableArray<byte> bytes => Inspect(bytes, fileExtension),
             IEnumerable<byte> bytes => Inspect(bytes, fileExtension),
             _ => throw new NotSupportedException()
         };

@@ -1,5 +1,3 @@
-using System.Collections.Immutable;
-
 namespace Flowsy.Content;
 
 /// <summary>
@@ -59,25 +57,6 @@ public interface IContentInspector
     /// <param name="cancellationToken">The cancellation token for the operation.</param>
     /// <returns>An instance of ContentDescriptor.</returns>
     public Task<ContentDescriptor> InspectAsync(IEnumerable<byte> bytes, string? fileExtension = null, CancellationToken cancellationToken = default);
-    
-    /// <summary>
-    /// Inspects a byte array to obtain the corresponding content descriptor.
-    /// The file extension will be used as a fallback if the descriptor could not be determined from the byte array.
-    /// </summary>
-    /// <param name="bytes">The file content as a byte array.</param>
-    /// <param name="fileExtension">The file extension associated with the byte array.</param>
-    /// <returns>An instance of ContentDescriptor.</returns>
-    public ContentDescriptor Inspect(ImmutableArray<byte> bytes, string? fileExtension = null);
-    
-    /// <summary>
-    /// Asynchronously inspects a byte array to obtain the corresponding content descriptor.
-    /// The file extension will be used as a fallback if the descriptor could not be determined from the byte array.
-    /// </summary>
-    /// <param name="bytes">The file content as a byte array.</param>
-    /// <param name="fileExtension">The file extension associated with the byte array.</param>
-    /// <param name="cancellationToken">The cancellation token for the operation.</param>
-    /// <returns>An instance of ContentDescriptor.</returns>
-    public Task<ContentDescriptor> InspectAsync(ImmutableArray<byte> bytes, string? fileExtension = null, CancellationToken cancellationToken = default);
     
     /// <summary>
     /// Inspects the given content to obtain the corresponding descriptor.
