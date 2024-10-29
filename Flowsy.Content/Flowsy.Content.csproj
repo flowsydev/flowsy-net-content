@@ -12,7 +12,7 @@
         <RepositoryType>git</RepositoryType>
         <RepositoryUrl>https://github.com/flowsydev/flowsy-net-content</RepositoryUrl>
 
-        <PackageVersion>4.0.0</PackageVersion>
+        <PackageVersion>4.0.1</PackageVersion>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageReadmeFile>README.md</PackageReadmeFile>
 
@@ -24,7 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Flowsy.Core" Version="4.1.0" />
+      <PackageReference Include="Flowsy.Core" Version="5.0.0" />
       <PackageReference Include="MimeTypesMap" Version="1.0.8" />
     </ItemGroup>
 
